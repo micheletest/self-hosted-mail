@@ -13,7 +13,7 @@ I'm loosely following this [guide](https://aws.amazon.com/blogs/opensource/fully
 
 ## TODO to productionize
 
-1. Redo the entire install process with my own cloudformation template
+1. Redo the entire install process with cdk
 2. Set up monitoring and alerting over EC2 & SES
 3. Get out of SES sandbox
 4. Once testing is complete, transfer my mail from it's current host to self host
