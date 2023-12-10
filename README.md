@@ -1,8 +1,21 @@
 # self-hosted-mail
 
-I'm loosely following this [guide](https://aws.amazon.com/blogs/opensource/fully-automated-deployment-of-an-open-source-mail-server-on-aws/).
+Personal project to implement a self hosted email within AWS using cdk.
 
-## Installation notes
+## TODO
+
+I'm managing a project plan with github projects
+
+1. Redo the entire original install process with cdk
+2. Set up monitoring and alerting over EC2 & SES
+3. Get out of SES sandbox
+4. Once testing is complete, transfer my mail from it's current host to self host
+
+## Initial Installation
+
+I loosely followed this [guide](https://aws.amazon.com/blogs/opensource/fully-automated-deployment-of-an-open-source-mail-server-on-aws/).
+
+#### Installation notes
 
 1. I needed to change and add a few parameters since the cloudformation template notes seemed outdated.
 2. I don't use AWS R53 with the domain I'm testing with. I needed to go to my hosting provider and set up the mail server config.
@@ -10,13 +23,6 @@ I'm loosely following this [guide](https://aws.amazon.com/blogs/opensource/fully
 4. There were some interactions between some of the parameters that took a while to get right. Specifically the template works whether you are creating a new install or restoring from backup, but different parameters are needed depending upon the use case.
 5. From the guide followed the instructions for setting up SSL/domain records, and SES in sandbox mode.
 6. The status page for mailinabox is fantastic for figuring out configuration issues.
-
-## TODO to productionize
-
-1. Redo the entire install process with cdk
-2. Set up monitoring and alerting over EC2 & SES
-3. Get out of SES sandbox
-4. Once testing is complete, transfer my mail from it's current host to self host
 
 ## Cost
 
