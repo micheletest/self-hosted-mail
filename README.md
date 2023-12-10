@@ -33,3 +33,7 @@ I loosely followed this [guide](https://aws.amazon.com/blogs/opensource/fully-au
 1. This is not for my gmail accounts. I do have issues with my custom domain emails, and would consider self-hosted-email for those accounts.
 2. This is mostly for fun. I'm trying to learn more about AWS so why not use it for something real.
 3. My custom domain email is either not set up, or is in a parked webhost. The webhost has horrible spam protection. I'd love to be able to manage spam myself, because anything would be an improvement.
+
+## Code notes
+
+- requires the black python formatter and will fail in github actions if not properly formatted
