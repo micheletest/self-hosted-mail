@@ -39,11 +39,20 @@ class MailserverInstance(Construct):
         )
 
         # Instance
-        ec2.Instance(
+        ec2_instance = ec2.Instance(
             self,
             "Instance",
             instance_type=ec2.InstanceType("t2.micro"),
             machine_image=amzn_linux,
             vpc=vpc,
             role=role,
+        )
+
+        eip = ec2.CfnEIP(self, "MailserverEIP")
+
+        ec2.CfnEIPAssociation(
+            self,
+            "MailserverEIPAssociation",
+            instance_id=ec2_instance.instance_id,
+            eip=eip.ref,
         )
