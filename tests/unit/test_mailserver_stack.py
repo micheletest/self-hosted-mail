@@ -11,3 +11,7 @@ def test_mailserver_created():
 
     template.has_resource_properties("AWS::EC2::Instance", {"InstanceType": "t2.micro"})
     template.resource_count_is("AWS::EC2::EIPAssociation", 1)
+    template.has_resource_properties(
+        "AWS::EC2::SecurityGroup",
+        {"GroupDescription": "Mailserver Instance Security Group"},
+    )
