@@ -1,13 +1,19 @@
 import os
-from aws_cdk import aws_ec2 as ec2, aws_iam as iam, aws_s3 as s3, aws_ssm as ssm
+from aws_cdk import (
+    aws_ec2 as ec2,
+    aws_iam as iam,
+    aws_s3 as s3,
+    aws_secretsmanager as secretsmanager,
+)
 
 from constructs import Construct
 
 VPC_CIDR = "0.0.0.0/0"
 # TODO: fail if existing S3 bucket name isn't provided, or make it safe to rerun using removal policy
+# NOTE: following are existing resources that MUST exist for this stack
 CDK_BACKUP_S3_BUCKET_NAME = os.getenv("CDK_BACKUP_S3_BUCKET_NAME", "")
-CDK_SMTP_USER_NAME = os.getenv("CDK_SMTP_USER_NAME", "")
-CDK_SMTP_PASSWORD = os.getenv("CDK_SMTP_PASSWORD", "")
+CDK_SMTP_USERNAME_SECRET_ARN = os.getenv("CDK_SMTP_USERNAME_SECRET_ARN", "")
+CDK_SMTP_PASSWORD_SECRET_ARN = os.getenv("CDK_SMTP_PASSWORD_SECRET_ARN", "")
 # TODO: define already created elastic ip
 CDK_ELASTIC_IP = ""
 
@@ -29,22 +35,6 @@ class MailserverInstance(Construct):
 
         backup_bucket = s3.Bucket.from_bucket_name(
             self, "MailserverBackupBucket", CDK_BACKUP_S3_BUCKET_NAME
-        )
-
-        smtp_user_name = ssm.StringParameter(
-            self,
-            "SMTPUserName",
-            parameter_name="/mailserver/smtp-user-name",
-            string_value=CDK_SMTP_USER_NAME,
-            type=ssm.ParameterType.SECURE_STRING,
-        )
-
-        smtp_password = ssm.StringParameter(
-            self,
-            "SMTPPassword",
-            parameter_name="/mailserver/smtp-password",
-            string_value=CDK_SMTP_PASSWORD,
-            type=ssm.ParameterType.SECURE_STRING,
         )
 
         sg = ec2.SecurityGroup(
@@ -135,10 +125,10 @@ class MailserverInstance(Construct):
                     ),
                     iam.PolicyStatement(
                         effect=iam.Effect.ALLOW,
-                        actions=["ssm:GetParameter"],
+                        actions=["secretsmanager:GetSecretValue"],
                         resources=[
-                            f"{smtp_user_name.parameter_arn}",
-                            f"{smtp_password.parameter_arn}",
+                            CDK_SMTP_PASSWORD_SECRET_ARN,
+                            CDK_SMTP_USERNAME_SECRET_ARN,
                         ],
                     ),
                 ],
