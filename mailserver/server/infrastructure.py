@@ -1,10 +1,11 @@
 import os
-from aws_cdk import aws_ec2 as ec2, aws_iam as iam
+from aws_cdk import aws_ec2 as ec2, aws_iam as iam, aws_s3 as s3
 
 from constructs import Construct
 
 VPC_CIDR = "0.0.0.0/0"
-CDK_BACKUP_S3_BUCKET_ARN = os.getenv("CDK_BACKUP_S3_BUCKET_ARN", "")
+# TODO: fail if existing S3 bucket name isn't provided, or make it safe to rerun using removal policy
+CDK_BACKUP_S3_BUCKET_NAME = os.getenv("CDK_BACKUP_S3_BUCKET_NAME", "")
 CDK_SMTP_USER_NAME_SSM_ARN = os.getenv("CDK_SMTP_USER_NAME_SSM_ARN", "")
 CDK_SMTP_PASSWORD_SSM_ARN = os.getenv("CDK_SMTP_PASSWORD_SSM_ARN", "")
 # TODO: define already created elastic ip
@@ -24,6 +25,10 @@ class MailserverInstance(Construct):
                     name="public", subnet_type=ec2.SubnetType.PUBLIC
                 )
             ],
+        )
+
+        bucket = s3.Bucket.from_bucket_name(
+            self, "MailserverBackupBucket", CDK_BACKUP_S3_BUCKET_NAME
         )
 
         sg = ec2.SecurityGroup(
@@ -108,8 +113,8 @@ class MailserverInstance(Construct):
                         effect=iam.Effect.ALLOW,
                         actions=["s3:*"],
                         resources=[
-                            CDK_BACKUP_S3_BUCKET_ARN,
-                            f"{CDK_BACKUP_S3_BUCKET_ARN}\*",
+                            f"{bucket.bucket_arn}",
+                            f"{bucket.bucket_arn}\*",
                         ],
                     ),
                     iam.PolicyStatement(
