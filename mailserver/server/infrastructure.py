@@ -1,13 +1,13 @@
 import os
-from aws_cdk import aws_ec2 as ec2, aws_iam as iam, aws_s3 as s3
+from aws_cdk import aws_ec2 as ec2, aws_iam as iam, aws_s3 as s3, aws_ssm as ssm
 
 from constructs import Construct
 
 VPC_CIDR = "0.0.0.0/0"
 # TODO: fail if existing S3 bucket name isn't provided, or make it safe to rerun using removal policy
 CDK_BACKUP_S3_BUCKET_NAME = os.getenv("CDK_BACKUP_S3_BUCKET_NAME", "")
-CDK_SMTP_USER_NAME_SSM_ARN = os.getenv("CDK_SMTP_USER_NAME_SSM_ARN", "")
-CDK_SMTP_PASSWORD_SSM_ARN = os.getenv("CDK_SMTP_PASSWORD_SSM_ARN", "")
+CDK_SMTP_USER_NAME = os.getenv("CDK_SMTP_USER_NAME", "")
+CDK_SMTP_PASSWORD = os.getenv("CDK_SMTP_PASSWORD", "")
 # TODO: define already created elastic ip
 CDK_ELASTIC_IP = ""
 
@@ -27,8 +27,24 @@ class MailserverInstance(Construct):
             ],
         )
 
-        bucket = s3.Bucket.from_bucket_name(
+        backup_bucket = s3.Bucket.from_bucket_name(
             self, "MailserverBackupBucket", CDK_BACKUP_S3_BUCKET_NAME
+        )
+
+        smtp_user_name = ssm.StringParameter(
+            self,
+            "SMTPUserName",
+            parameter_name="/mailserver/smtp-user-name",
+            string_value=CDK_SMTP_USER_NAME,
+            type=ssm.ParameterType.SECURE_STRING,
+        )
+
+        smtp_password = ssm.StringParameter(
+            self,
+            "SMTPPassword",
+            parameter_name="/mailserver/smtp-password",
+            string_value=CDK_SMTP_PASSWORD,
+            type=ssm.ParameterType.SECURE_STRING,
         )
 
         sg = ec2.SecurityGroup(
@@ -113,16 +129,16 @@ class MailserverInstance(Construct):
                         effect=iam.Effect.ALLOW,
                         actions=["s3:*"],
                         resources=[
-                            f"{bucket.bucket_arn}",
-                            f"{bucket.bucket_arn}\*",
+                            f"{backup_bucket.bucket_arn}",
+                            f"{backup_bucket.bucket_arn}\*",
                         ],
                     ),
                     iam.PolicyStatement(
                         effect=iam.Effect.ALLOW,
                         actions=["ssm:GetParameter"],
                         resources=[
-                            CDK_SMTP_PASSWORD_SSM_ARN,
-                            CDK_SMTP_USER_NAME_SSM_ARN,
+                            f"{smtp_user_name.parameter_arn}",
+                            f"{smtp_password.parameter_arn}",
                         ],
                     ),
                 ],
