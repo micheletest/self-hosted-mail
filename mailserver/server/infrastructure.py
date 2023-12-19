@@ -1,8 +1,14 @@
+import os
 from aws_cdk import aws_ec2 as ec2, aws_iam as iam
 
 from constructs import Construct
 
 VPC_CIDR = "0.0.0.0/0"
+CDK_BACKUP_S3_BUCKET_ARN = os.getenv("CDK_BACKUP_S3_BUCKET_ARN", "")
+CDK_SMTP_USER_NAME_SSM_ARN = os.getenv("CDK_SMTP_USER_NAME_SSM_ARN", "")
+CDK_SMTP_PASSWORD_SSM_ARN = os.getenv("CDK_SMTP_PASSWORD_SSM_ARN", "")
+# TODO: define already created elastic ip
+CDK_ELASTIC_IP = ""
 
 
 class MailserverInstance(Construct):
@@ -91,12 +97,30 @@ class MailserverInstance(Construct):
         )
 
         role = iam.Role(
-            self, "InstanceSSM", assumed_by=iam.ServicePrincipal("ec2.amazonaws.com")
+            self, "MailserverSSM", assumed_by=iam.ServicePrincipal("ec2.amazonaws.com")
         )
-
-        role.add_managed_policy(
-            iam.ManagedPolicy.from_aws_managed_policy_name(
-                "AmazonSSMManagedInstanceCore"
+        role.attach_inline_policy(
+            iam.Policy(
+                self,
+                "MailserverPolicy",
+                statements=[
+                    iam.PolicyStatement(
+                        effect=iam.Effect.ALLOW,
+                        actions=["s3:*"],
+                        resources=[
+                            CDK_BACKUP_S3_BUCKET_ARN,
+                            f"{CDK_BACKUP_S3_BUCKET_ARN}\*",
+                        ],
+                    ),
+                    iam.PolicyStatement(
+                        effect=iam.Effect.ALLOW,
+                        actions=["ssm:GetParameter"],
+                        resources=[
+                            CDK_SMTP_PASSWORD_SSM_ARN,
+                            CDK_SMTP_USER_NAME_SSM_ARN,
+                        ],
+                    ),
+                ],
             )
         )
 
