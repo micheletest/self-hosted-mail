@@ -16,6 +16,9 @@ CDK_SMTP_PASSWORD_SECRET_ARN = os.getenv("CDK_SMTP_PASSWORD_SECRET_ARN", "")
 # TODO: define already created elastic ip
 CDK_ELASTIC_IP = ""
 
+with open("./user_data/user_data.sh") as f:
+    user_data = f.read()
+
 
 class MailserverInstance(Construct):
     def __init__(self, scope: Construct, id: str, **kwargs) -> None:
@@ -141,6 +144,7 @@ class MailserverInstance(Construct):
             vpc=vpc,
             role=role,
             security_group=sg,
+            user_data=ec2.UserData.custom(user_data),
         )
 
         eip = ec2.CfnEIP(self, "MailserverEIP")
