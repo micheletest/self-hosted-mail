@@ -3,7 +3,6 @@ from aws_cdk import (
     aws_ec2 as ec2,
     aws_iam as iam,
     aws_s3 as s3,
-    aws_secretsmanager as secretsmanager,
 )
 
 from constructs import Construct
@@ -11,7 +10,7 @@ from constructs import Construct
 VPC_CIDR = "0.0.0.0/0"
 # TODO: fail if existing S3 bucket name isn't provided, or make it safe to rerun using removal policy
 # NOTE: following are existing resources that MUST exist for this stack
-CDK_BACKUP_S3_BUCKET_NAME = os.getenv("CDK_BACKUP_S3_BUCKET_NAME", "")
+CDK_BACKUP_S3_BUCKET_NAME = os.getenv("CDK_BACKUP_S3_BUCKET_NAME", "unset")
 CDK_SMTP_USERNAME_SECRET_ARN = os.getenv("CDK_SMTP_USERNAME_SECRET_ARN", "")
 CDK_SMTP_PASSWORD_SECRET_ARN = os.getenv("CDK_SMTP_PASSWORD_SECRET_ARN", "")
 # TODO: define already created elastic ip
