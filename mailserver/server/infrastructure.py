@@ -99,11 +99,10 @@ class MailserverInstance(Construct):
             description="Sieve Mail filtering ingress",
         )
 
-        amzn_linux = ec2.MachineImage.latest_amazon_linux(
-            generation=ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
-            edition=ec2.AmazonLinuxEdition.STANDARD,
-            virtualization=ec2.AmazonLinuxVirt.HVM,
-            storage=ec2.AmazonLinuxStorage.GENERAL_PURPOSE,
+        linux = ec2.MachineImage.generic_linux(
+            {
+                "us-east-1": "ami-0e783882a19958fff",
+            }
         )
 
         role = iam.Role(
@@ -138,7 +137,7 @@ class MailserverInstance(Construct):
             self,
             "Instance",
             instance_type=ec2.InstanceType("t2.micro"),
-            machine_image=amzn_linux,
+            machine_image=linux,
             vpc=vpc,
             role=role,
             security_group=sg,
