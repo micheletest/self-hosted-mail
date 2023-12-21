@@ -16,7 +16,7 @@ CDK_SMTP_PASSWORD_SECRET_ARN = os.getenv("CDK_SMTP_PASSWORD_SECRET_ARN", "")
 # TODO: define already created elastic ip
 CDK_ELASTIC_IP = ""
 
-with open("./user_data/user_data.sh") as f:
+with open("./mailserver/server/user_data/user_data.sh") as f:
     user_data = f.read()
 
 

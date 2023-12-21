@@ -13,16 +13,14 @@ unzip \
 intltool \
 python-is-python3
 pip3 install duplicity==1.0.1
-# snap install duplicity --classic
-# ln -s /snap/bin/duplicity /usr/bin/duplicity
 
-# Install awscli and CloudFormation helper scripts
-cd /tmp
-curl "https://awscli.amazonaws.com/awscli-exe-linux-$(uname -m).zip" -o "awscliv2.zip"
-unzip awscliv2.zip
-./aws/install
-pip3 install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-py3-latest.tar.gz
-
-# Storage
+# Configuration for mailinabox non-interactive
 export STORAGE_ROOT=/home/user-data
 export STORAGE_USER=user-data
+export NONINTERACTIVE=1
+export PUBLIC_IP=auto
+export PUBLIC_IPV6=auto
+export PRIMARY_HOSTNAME=auto
+export SKIP_NETWORK_CHECKS=1
+
+curl -s https://mailinabox.email/setup.sh | sudo -E bash
