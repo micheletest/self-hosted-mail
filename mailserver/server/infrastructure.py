@@ -1,18 +1,10 @@
-import os
-from aws_cdk import (
-    aws_ec2 as ec2,
-    aws_iam as iam,
-    aws_s3 as s3,
-)
+from aws_cdk import aws_ec2 as ec2, aws_iam as iam, aws_s3 as s3, Fn
 
 from constructs import Construct
 
 VPC_CIDR = "0.0.0.0/0"
 # TODO: define already created elastic ip
 CDK_ELASTIC_IP = ""
-
-with open("./mailserver/server/user_data/user_data.sh") as f:
-    user_data = f.read()
 
 
 class MailserverInstance(Construct):
@@ -22,6 +14,8 @@ class MailserverInstance(Construct):
         backup_s3_bucket = self.node.get_context("backup_s3_bucket")
         smtp_username_arn = self.node.get_context("smtp_username_arn")
         smtp_password_arn = self.node.get_context("smtp_password_arn")
+        elastic_ip = self.node.get_context("elastic_ip")
+        hostname = self.node.get_context("hostname")
 
         vpc = ec2.Vpc(
             self,
@@ -135,6 +129,11 @@ class MailserverInstance(Construct):
             )
         )
 
+        mappings = {"__ELASTIC_IP__": elastic_ip, "__HOSTNAME__": hostname}
+
+        with open("./mailserver/server/user_data/user_data.sh", "r") as user_data_h:
+            user_data_sub = Fn.sub(user_data_h.read(), mappings)
+
         ec2_instance = ec2.Instance(
             self,
             "Instance",
@@ -143,7 +142,7 @@ class MailserverInstance(Construct):
             vpc=vpc,
             role=role,
             security_group=sg,
-            user_data=ec2.UserData.custom(user_data),
+            user_data=ec2.UserData.custom(user_data_sub),
         )
 
         eip = ec2.CfnEIP(self, "MailserverEIP")
