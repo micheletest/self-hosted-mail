@@ -2,6 +2,18 @@
 
 Personal project to implement a self hosted email within AWS using cdk.
 
+## CDK Usage
+
+1. install cdk tools following existing AWS instructions
+2. _Currently_ requires these to be set up on AWS and passed in as context:
+
+- `backup_s3_bucket` - just the bucket name
+- `smtp_password_arn` - arn to a secrets manager smtp password
+  - further notes about this upcoming. this needs to be set up per AWS instructions
+- `smtp_username_arn` - arn to a secrets manager smtp username
+
+3. Run like: `cdk synth||deploy --context backup_s3_bucket=bucketname --context smtp_password_arn=arn:aws:secretsmanager:etcetc --context smtp_username_arn=arn:aws:secretsmanager:etcetc`
+
 ## TODO
 
 I'm managing a project plan with github projects

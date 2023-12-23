@@ -8,11 +8,6 @@ from aws_cdk import (
 from constructs import Construct
 
 VPC_CIDR = "0.0.0.0/0"
-# TODO: fail if existing S3 bucket name isn't provided, or make it safe to rerun using removal policy
-# NOTE: following are existing resources that MUST exist for this stack
-CDK_BACKUP_S3_BUCKET_NAME = os.getenv("CDK_BACKUP_S3_BUCKET_NAME", "unset")
-CDK_SMTP_USERNAME_SECRET_ARN = os.getenv("CDK_SMTP_USERNAME_SECRET_ARN", "")
-CDK_SMTP_PASSWORD_SECRET_ARN = os.getenv("CDK_SMTP_PASSWORD_SECRET_ARN", "")
 # TODO: define already created elastic ip
 CDK_ELASTIC_IP = ""
 
@@ -23,6 +18,10 @@ with open("./mailserver/server/user_data/user_data.sh") as f:
 class MailserverInstance(Construct):
     def __init__(self, scope: Construct, id: str, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
+
+        backup_s3_bucket = self.node.get_context("backup_s3_bucket")
+        smtp_username_arn = self.node.get_context("smtp_username_arn")
+        smtp_password_arn = self.node.get_context("smtp_password_arn")
 
         vpc = ec2.Vpc(
             self,
@@ -36,7 +35,7 @@ class MailserverInstance(Construct):
         )
 
         backup_bucket = s3.Bucket.from_bucket_name(
-            self, "MailserverBackupBucket", CDK_BACKUP_S3_BUCKET_NAME
+            self, "MailserverBackupBucket", backup_s3_bucket
         )
 
         sg = ec2.SecurityGroup(
@@ -128,8 +127,8 @@ class MailserverInstance(Construct):
                         effect=iam.Effect.ALLOW,
                         actions=["secretsmanager:GetSecretValue"],
                         resources=[
-                            CDK_SMTP_PASSWORD_SECRET_ARN,
-                            CDK_SMTP_USERNAME_SECRET_ARN,
+                            smtp_username_arn,
+                            smtp_password_arn,
                         ],
                     ),
                 ],
