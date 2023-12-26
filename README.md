@@ -11,8 +11,10 @@ Personal project to implement a self hosted email within AWS using cdk.
 - `smtp_password_arn` - arn to a secrets manager smtp password
   - further notes about this upcoming. this needs to be set up per AWS instructions
 - `smtp_username_arn` - arn to a secrets manager smtp username
+- `elastic_ip` - ip that can be assigned to the instance
+- `hostname` - domain that is owned that can be assigned to the instance
 
-3. Run like: `cdk synth||deploy --context backup_s3_bucket=bucketname --context smtp_password_arn=arn:aws:secretsmanager:etcetc --context smtp_username_arn=arn:aws:secretsmanager:etcetc`
+3. Run like: `cdk synth||deploy --context backup_s3_bucket=bucketname --context smtp_password_arn=arn:aws:secretsmanager:etcetc --context smtp_username_arn=arn:aws:secretsmanager:etcetc elastic_ip=123.21.13.132 domain=example.com`
 
 ## TODO
 
