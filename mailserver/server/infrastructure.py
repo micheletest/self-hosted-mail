@@ -3,8 +3,6 @@ from aws_cdk import aws_ec2 as ec2, aws_iam as iam, aws_s3 as s3, Fn
 from constructs import Construct
 
 VPC_CIDR = "0.0.0.0/0"
-# TODO: define already created elastic ip
-CDK_ELASTIC_IP = ""
 
 
 class MailserverInstance(Construct):
@@ -145,11 +143,9 @@ class MailserverInstance(Construct):
             user_data=ec2.UserData.custom(user_data_sub),
         )
 
-        eip = ec2.CfnEIP(self, "MailserverEIP")
-
         ec2.CfnEIPAssociation(
             self,
             "MailserverEIPAssociation",
             instance_id=ec2_instance.instance_id,
-            eip=eip.ref,
+            eip=elastic_ip,
         )
