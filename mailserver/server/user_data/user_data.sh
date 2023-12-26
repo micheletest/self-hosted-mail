@@ -1,4 +1,6 @@
 #!/bin/bash -xe
+ELASTIC_IP="${__ELASTIC_IP__}"
+HOSTNAME="${__HOSTNAME__}"
 apt-get update
 apt-get upgrade -o DPkg::Lock::Timeout=120 -y  
 
@@ -18,9 +20,9 @@ pip3 install duplicity==1.0.1
 export STORAGE_ROOT=/home/user-data
 export STORAGE_USER=user-data
 export NONINTERACTIVE=1
-export PUBLIC_IP=auto
+export PUBLIC_IP=${!ELASTIC_IP}
 export PUBLIC_IPV6=auto
-export PRIMARY_HOSTNAME=auto
+export PRIMARY_HOSTNAME=${!HOSTNAME}
 export SKIP_NETWORK_CHECKS=1
 
 curl -s https://mailinabox.email/setup.sh | sudo -E bash
