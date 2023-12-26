@@ -141,6 +141,14 @@ class MailserverInstance(Construct):
             role=role,
             security_group=sg,
             user_data=ec2.UserData.custom(user_data_sub),
+            block_devices=[
+                ec2.BlockDevice(
+                    device_name="/dev/sda1",
+                    volume=ec2.BlockDeviceVolume.ebs(
+                        8, encrypted=True, delete_on_termination=True
+                    ),
+                )
+            ],
         )
 
         ec2.CfnEIPAssociation(
