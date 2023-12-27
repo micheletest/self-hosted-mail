@@ -1,6 +1,9 @@
 #!/bin/bash -xe
 ELASTIC_IP="${__ELASTIC_IP__}"
 HOSTNAME="${__HOSTNAME__}"
+NEXTCLOUD_BUCKET="${__NEXTCLOUD_BUCKET__}"
+REGION="${__REGION__}"
+
 apt-get update
 apt-get upgrade -o DPkg::Lock::Timeout=120 -y  
 
@@ -24,5 +27,7 @@ export PUBLIC_IP=${!ELASTIC_IP}
 export PUBLIC_IPV6=auto
 export PRIMARY_HOSTNAME=${!HOSTNAME}
 export SKIP_NETWORK_CHECKS=1
+export NEXTCLOUD_S3_BUCKET=${!NEXTCLOUD_BUCKET}
+export NEXTCLOUD_S3_REGION=${!REGION}
 
 curl -s https://mailinabox.email/setup.sh | sudo -E bash

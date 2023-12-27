@@ -15,4 +15,4 @@ class Mailserver(cdk.Stack):
     ):
         super().__init__(scope, id_, **kwargs)
 
-        self.server = MailserverInstance(self, "EC2Instance")
+        self.server = MailserverInstance(self, "EC2Instance", self.region)

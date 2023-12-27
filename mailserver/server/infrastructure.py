@@ -6,10 +6,11 @@ VPC_CIDR = "0.0.0.0/0"
 
 
 class MailserverInstance(Construct):
-    def __init__(self, scope: Construct, id: str, **kwargs) -> None:
+    def __init__(self, scope: Construct, id: str, region: str, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
         backup_s3_bucket = self.node.get_context("backup_s3_bucket")
+        nextcloud_s3_bucket = self.node.get_context("nextcloud_s3_bucket")
         smtp_username_arn = self.node.get_context("smtp_username_arn")
         smtp_password_arn = self.node.get_context("smtp_password_arn")
         elastic_ip = self.node.get_context("elastic_ip")
@@ -28,6 +29,9 @@ class MailserverInstance(Construct):
 
         backup_bucket = s3.Bucket.from_bucket_name(
             self, "MailserverBackupBucket", backup_s3_bucket
+        )
+        nextcloud_bucket = s3.Bucket.from_bucket_name(
+            self, "MailserverNextcloudBucket", nextcloud_s3_bucket
         )
 
         sg = ec2.SecurityGroup(
@@ -113,6 +117,8 @@ class MailserverInstance(Construct):
                         resources=[
                             f"{backup_bucket.bucket_arn}",
                             f"{backup_bucket.bucket_arn}\*",
+                            f"{nextcloud_bucket.bucket_arn}",
+                            f"{nextcloud_bucket.bucket_arn}\*",
                         ],
                     ),
                     iam.PolicyStatement(
@@ -127,7 +133,12 @@ class MailserverInstance(Construct):
             )
         )
 
-        mappings = {"__ELASTIC_IP__": elastic_ip, "__HOSTNAME__": hostname}
+        mappings = {
+            "__ELASTIC_IP__": elastic_ip,
+            "__HOSTNAME__": hostname,
+            "__REGION__": region,
+            "__NEXTCLOUD_BUCKET__": nextcloud_s3_bucket,
+        }
 
         with open("./mailserver/server/user_data/user_data.sh", "r") as user_data_h:
             user_data_sub = Fn.sub(user_data_h.read(), mappings)
