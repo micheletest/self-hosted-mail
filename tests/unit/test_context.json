@@ -1,6 +1,7 @@
 {
   "context": {
     "backup_s3_bucket": "test-bucket",
+    "nextcloud_s3_bucket": "nextcloud-bucket",
     "smtp_password_arn": "arn:aws:secretsmanager:us-east-1:1234556458:secret:thisIsObviouslyARealSecret-iojfoa",
     "smtp_username_arn": "arn:aws:secretsmanager:us-east-1:1234556458:secret:definitelyARealUsername-vjgsuK",
     "elastic_ip": "123.45.67.89",
