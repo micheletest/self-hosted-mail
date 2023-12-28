@@ -15,7 +15,7 @@ Personal project to implement a self hosted email within AWS using cdk.
 - `hostname` - domain that is owned that can be assigned to the instance
 
 3. Optional parameters:
-   These will be created if not provided. If they are created ahead of time, they will be used. Upon stack delete, the buckets will persist.
+   These will be created if not provided. If they are created ahead of time and passed in as context, they will be used. Upon stack delete, the buckets will persist.
 
 - `backup_s3_bucket` - backup bucket name
 - `nextcloud_s3_bucket` - nextcloud bucket name
