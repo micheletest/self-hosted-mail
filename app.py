@@ -4,9 +4,6 @@ from mailserver.component import Mailserver
 
 
 app = cdk.App()
-Mailserver(
-    app,
-    "Mailserver",
-)
+Mailserver(app, "Mailserver")
 
 app.synth()
