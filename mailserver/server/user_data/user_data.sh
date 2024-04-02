@@ -1,6 +1,6 @@
 #!/bin/bash -xe
 ELASTIC_IP="${__ELASTIC_IP__}"
-HOSTNAME="${__HOSTNAME__}"
+HOSTNAME="box.${__HOSTNAME__}"
 NEXTCLOUD_BUCKET="${__NEXTCLOUD_BUCKET__}"
 REGION="${__REGION__}"
 
